@@ -1,0 +1,38 @@
+<meta charset="utf-8"/>
+<div class="row" id="app">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12">
+                {{valueData}}
+                <div v-if="show">我是显示的</div>
+                <div v-else>我是隐藏的</div>
+
+                <el-button icon="el-icon-search" type="primary">添加</el-button>
+                <el-button-group>
+                    <el-button type="primary" icon="el-icon-arrow-left">第一页</el-button>
+                    <el-button type="primary">上一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                    <el-button type="primary">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                    <el-button type="primary">最后页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                </el-button-group>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var scripts = [null, null];
+    $('.page-content-area').ace_ajax('loadScripts', scripts, function(){
+        $(function($){});
+    });
+    new Vue({
+        el : '#app',
+        data : function(){
+            return {
+                valueData:'个人信息管理',
+                show : true
+            }
+        },
+        created() {},
+        methods : {}
+    });
+</script>

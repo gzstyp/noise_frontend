@@ -1,0 +1,239 @@
+<meta charset="utf-8"/>
+
+<style>
+    .contextmenu {
+        margin: 0;
+        background: #fff;
+        z-index: 3000;
+        position: absolute;
+        list-style-type: none;
+        padding: 5px 0;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 400;
+        color: #333;
+        box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.3);
+    }
+    .contextmenu li {
+        margin: 0;
+        padding: 6px 18px;
+        cursor: pointer;
+    }
+    .contextmenu li:hover {
+        background: #eee;
+    }
+
+</style>
+
+<div class="row" id="app">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12">
+                <div style="display:flex;justify-content:space-between">
+                    <div style="width:500px;height:auto;">
+                        <el-tree
+                            :props="props"
+                            :load="loadNode"
+                            :lazy="true"
+                            node-key="id"
+                            highlight-current
+                            :default-expand-all="false"
+                            @node-click="nodeClick"
+                            @node-expand="nodeExpand"
+                            @node-contextmenu="rightClick"
+                            ref="asyncTree"
+                        >
+                        </el-tree>
+                    </div>
+                    <div style="width:100%;border-left:1px dashed #c6c6c6">
+
+                        <el-table
+                            ref="multipleTable"
+                            :data="tableListData"
+                            tooltip-effect="dark"
+                            style="width: 100%">
+                            <el-table-column
+                                type="selection"
+                                width="55">
+                            </el-table-column>
+                            <el-table-column
+                                label="日期"
+                                width="120">
+                                <template slot-scope="scope">{{ scope.row.date }}</template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="name"
+                                label="姓名"
+                                width="120">
+                            </el-table-column>
+                            <el-table-column
+                                prop="id"
+                                label="地址"
+                                show-overflow-tooltip>
+                            </el-table-column>
+                        </el-table>
+
+                    </div>
+                </div>
+
+                <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
+                    <li @click="liAdd"><i class="el-icon-plus"></i>添加</li>
+                    <li @click="liEdit"><i class="el-icon-edit"></i>编辑</li>
+                    <li @click="liDel"><i class="el-icon-delete"></i>删除</li>
+                    <li @click="liCancel"><i class="el-icon-close"></i>取消</li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="div_dep_edit" style="padding-top:20px;padding-left:30px;display:none">
+        <el-input v-model="depName" placeholder="组织机构名称" style="width:180px"></el-input>
+        <el-checkbox v-model="isParent">父节点</el-checkbox>
+    </div>
+</div>
+
+<script type="text/javascript">
+    new Vue({
+        el : '#app',
+        data() {
+            return {
+                props : {
+                    id: "id",
+                    label: 'name',
+                    isLeaf : 'isLeaf'
+                },
+                tableData: [{
+                    date: '2016-05-03',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }],
+                /*右键菜单开始*/
+                visible : false,
+                left : 0,
+                top : 0,
+                nodeData : {
+                    id : '',
+                    isLeaf : false,
+                    name : '',
+                    parent_id : ''
+                },
+                depName : '',
+                isParent : false,
+                /*右键菜单结束*/
+                tableListData : []
+            }
+        },
+        /* 监听的是vuex的数据源 */
+        computed : {},
+        /*监听的是data或pros的数据*/
+        watch : {
+            visible(value) {
+                if (value){
+                    document.body.addEventListener('click',this.closeMenu)
+                } else {
+                    document.body.removeEventListener('click',this.closeMenu)
+                }
+            }
+        },
+        mounted(){},
+        created() {},
+        methods : {
+            nodeClick : function(data,node){
+                /*console.log(data.name);
+                console.log(node);
+                console.log(node.data);
+                console.log(node.isLeaf);//是否是叶子节点
+                console.log(node.expanded);//是否展开*/
+            },
+            loadNode(node,resolve){
+                // 查找顶级对象
+                if (node.level === 0) {
+                    ajax.get('/sys_department/queryAllDepartment',{},(data)=>{
+                        if(AppKey.code.code200 === data.code){
+                            return resolve(data.data);
+                        }
+                    },(error)=>{
+                        let data = []
+                        console.log(error);
+                        return resolve(data)
+                    });
+                } else {
+                    // 根据父节点id找寻下一级的所有节点
+                    ajax.get('/sys_department/queryAllDepartment',{kid:node.data.id},(data)=>{
+                        if(AppKey.code.code200 === data.code){
+                            return resolve(data.data);
+                        }
+                    },(error)=>{
+                        let data = []
+                        console.log(error);
+                        return resolve(data)
+                    });
+                }
+            },
+            closeMenu() {
+                this.visible = false
+            },
+            //右键
+            rightClick(e,data,node,par){
+                //console.info(e);
+                //console.info(data);
+                this.nodeData = data;
+                //console.info(node);
+                //console.info(par);
+
+                const menuMinWidth = 105;
+                const offsetLeft = this.$el.getBoundingClientRect().left; // container margin left
+                const offsetWidth = this.$el.offsetWidth; // container width
+                const maxLeft = offsetWidth - menuMinWidth; // left boundary
+                const left = e.clientX - offsetLeft; // 15: margin right
+
+                if (left > maxLeft) {
+                    this.left = maxLeft
+                } else {
+                    this.left = left
+                }
+
+                this.top = e.clientY - 60 // fix 位置bug
+                this.visible = true
+            },
+            //被展开时
+            nodeExpand(data,node){
+                //console.info(data.id);
+                //console.info(node);
+            },
+            liAdd(){
+                this.isParent = false;
+                this.depName = '';
+                layerFn.addOrEdit(this.nodeData.name+"添加子节点",'#div_dep_edit',['300px','150px'],(index)=>{
+                    layerFn.closeIndex(index);
+                });
+            },
+            liEdit(){
+                this.isParent = !this.nodeData.isLeaf;
+                this.depName = this.nodeData.name;
+                layerFn.addOrEdit('编辑'+this.nodeData.name,'#div_dep_edit',['300px','150px'],(index)=>{
+                    layerFn.closeIndex(index);
+                });
+            },
+            liDel(){
+                this.isParent = false;
+                const pid = this.nodeData.parent_id;
+                layerFn.confirm('删除后是无法恢复的,确定要删除节点['+this.nodeData.name+']?',()=>{
+                    this.refreshNodeBy(pid);
+                });
+            },
+            liCancel(){
+                this.visible = false;
+            },
+            /*刷新子节点,重新查询该节点下的所有子节点*/
+            refreshNodeBy(pid){
+                let node = this.$refs.asyncTree.getNode(pid); // 通过节点id找到对应树节点对象
+                if(node != null){
+                    node.loaded = false;
+                    node.expand(); // 主动调用展开节点方法，重新查询该节点下的所有子节点
+                }
+            }
+        }
+    });
+</script>

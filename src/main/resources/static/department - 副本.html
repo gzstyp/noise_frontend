@@ -1,0 +1,242 @@
+<meta charset="utf-8"/>
+
+<style>
+    .contextmenu {
+        margin: 0;
+        background: #fff;
+        z-index: 3000;
+        position: absolute;
+        list-style-type: none;
+        padding: 5px 0;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 400;
+        color: #333;
+        box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.3);
+    }
+    .contextmenu li {
+        margin: 0;
+        padding: 7px 16px;
+        cursor: pointer;
+    }
+    .contextmenu li:hover {
+        background: #eee;
+    }
+
+</style>
+
+<div class="row" id="app">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12">
+                <div style="display:flex;justify-content:space-between">
+                    <div style="width:500px;height:auto;">
+                        <el-tree v-if="treeList.length > 0"
+                            :data="treeList"
+                            :props="props"
+                            :load="loadNode"
+                            :lazy="true"
+                            node-key="id"
+                            highlight-current
+                            :default-expand-all="false"
+                            @node-click="nodeClick"
+                            @node-expand="nodeExpand"
+                            @check-change="handleCheckChange"
+                            @node-contextmenu="rightClick"
+                        >
+                        </el-tree>
+                    </div>
+                    <div style="width:100%;border-left:1px dashed #c6c6c6">
+
+                        <el-table
+                            ref="multipleTable"
+                            :data="tableListData"
+                            tooltip-effect="dark"
+                            style="width: 100%">
+                            <el-table-column
+                                type="selection"
+                                width="55">
+                            </el-table-column>
+                            <el-table-column
+                                label="日期"
+                                width="120">
+                                <template slot-scope="scope">{{ scope.row.date }}</template>
+                            </el-table-column>
+                            <el-table-column
+                                prop="name"
+                                label="姓名"
+                                width="120">
+                            </el-table-column>
+                            <el-table-column
+                                prop="id"
+                                label="地址"
+                                show-overflow-tooltip>
+                            </el-table-column>
+                        </el-table>
+
+                    </div>
+                </div>
+
+                <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
+                    <li @click="liAdd">添加</li>
+                    <li @click="liEdit">编辑</li>
+                    <li @click="liDel">删除</li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    new Vue({
+        el : '#app',
+        data() {
+            return {
+                props : {
+                    label: 'name',
+                    children: 'zones'
+                },
+                count: 1,
+                treeList : [],
+
+                tableData: [{
+                    date: '2016-05-03',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }],
+
+                visible : false,
+                left : 0,
+                top : 0,
+
+                tableListData : [],
+                value : 1024
+            }
+        },
+        /* 监听的是vuex的数据源 */
+        computed : {},
+        /*监听的是data或pros的数据*/
+        watch : {
+            visible(value) {
+                if (value){
+                    document.body.addEventListener('click',this.closeMenu)
+                } else {
+                    document.body.removeEventListener('click',this.closeMenu)
+                }
+            }
+        },
+        mounted(){
+
+        },
+        created() {
+            this.getList();
+        },
+        methods : {
+            handleCheckChange(data, checked, indeterminate) {
+                console.log(data, checked, indeterminate);
+            },
+            nodeClick : function(data,node){
+                console.log(data.name);
+                console.log(node);
+                console.log(node.data);
+                console.log(node.isLeaf);//是否是叶子节点
+                console.log(node.expanded);//是否展开
+            },
+            loadNode(node,resolve){
+                console.info('id1:'+node.id);
+                console.info('id2:'+node.data.id);
+                if (node.level === 0){
+                    this.getList(node.level);
+                    return resolve(this.treeList);
+                }else{
+                    this.getList(node.data.id);
+                    resolve(this.treeList);
+                }
+                /*if (node.level > 3) return resolve([]);
+
+                var hasChild;
+                if (node.data.name === 'region1') {
+                    hasChild = true;
+                } else if (node.data.name === 'region2') {
+                    hasChild = false;
+                } else {
+                    hasChild = Math.random() > 0.5;
+                }
+
+                setTimeout(() => {
+                    var data;
+                    if (hasChild) {
+                        data = [{
+                            id: this.count++,
+                            name: 'zone' + this.count++
+                        },{
+                            id: this.count++,
+                            name: 'zone' + this.count++,
+                        }];
+                    } else {
+                        data = [];
+                    }
+                    resolve(data);
+                }, 500);*/
+            },
+            getList(pid){
+                let params = {};
+                if(pid ===0){
+
+                }else{
+                    params = {
+                        kid:pid
+                    };
+                }
+                ajax.get('/sys_department/queryAllDepartment', params,(data)=>{
+                    if(AppKey.code.code200 === data.code){
+                        this.treeList = data.data;
+                    }
+                },(error)=>{
+                    console.log(error);
+                });
+            },
+            closeMenu() {
+                this.visible = false
+            },
+            //右键
+            rightClick(e,data,node,par){
+                //console.info(e);
+                console.info(data);
+                console.info(node);
+                //console.info(par);
+
+                const menuMinWidth = 105
+                const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
+                const offsetWidth = this.$el.offsetWidth // container width
+                const maxLeft = offsetWidth - menuMinWidth // left boundary
+                const left = e.clientX - offsetLeft // 15: margin right
+
+                if (left > maxLeft) {
+                    this.left = maxLeft
+                } else {
+                    this.left = left
+                }
+
+                this.top = e.clientY - 60 // fix 位置bug
+                this.visible = true
+            },
+            //被展开时
+            nodeExpand(data,node){
+                console.info(data.id);
+                //console.info(node);
+                //this.getList(data.id);
+            },
+            liAdd(){
+                console.info('add');
+            },
+            liEdit(){
+                console.info('edit');
+            },
+            liDel(){
+                console.info('del');
+            }
+        }
+    });
+</script>
