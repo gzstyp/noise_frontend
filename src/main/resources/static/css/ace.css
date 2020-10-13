@@ -14690,6 +14690,7 @@ ul.attachment-list > li {
 }
 .dataTable > thead > tr > th.sorting_disabled {
   cursor: inherit;
+  color:#6F6F6F;
 }
 .dataTable > thead > tr > th.sorting_disabled:after {
   display: none;
