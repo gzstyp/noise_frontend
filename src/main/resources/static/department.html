@@ -33,6 +33,7 @@
                 <div style="display:flex;justify-content:space-between">
                     <div style="width:500px;height:100%;">
                         <el-tree
+                            v-if="permissions.department_queryAllDepartment"
                             :props="props"
                             :load="loadNode"
                             :lazy="true"
@@ -126,7 +127,8 @@
                 permissions : {
                     department_add : false,
                     department_edit : false,
-                    department_delById : false
+                    department_delById : false,
+                    department_queryAllDepartment : false
                 }
             }
         },
