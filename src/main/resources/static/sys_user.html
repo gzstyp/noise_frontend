@@ -549,6 +549,7 @@
                         layerFn.alert('没有操作权限',AppKey.code.code199);
                         return;
                     }
+                    this.clearDpet();//清空数据
                     var row = thisJquery.fnGetData(index);
                     layerFn.queryGetHint(urlGetDeptData,{userId:row.kid},function(data){
                         tree_obj_dept = $.fn.zTree.init($("#"+domDeptData),settingDeptData,data.data);//填充数据
@@ -572,6 +573,10 @@
                             });
                         });
                     });
+                },
+                clearDpet(){
+                    winFn.setDomValue('#dept_name','');
+                    winFn.setDomValue('#dept_kid','');
                 },
                 /*权限菜单*/
                 rowOwnMenu : function(index){

@@ -55,20 +55,15 @@
                             tooltip-effect="dark"
                             border
                             style="width: 100%">
-                            <el-table-column type="selection" align="center" width="55"></el-table-column>
+                            <el-table-column type="selection" align="center" width="35"></el-table-column>
                             <el-table-column
-                                label="日期"
-                                width="120">
-                                <template slot-scope="scope">{{ scope.row.date }}</template>
+                                label="登录账号"
+                                width="200">
+                                <template slot-scope="scope">{{scope.row.user_name}}</template>
                             </el-table-column>
                             <el-table-column
-                                prop="name"
-                                label="姓名"
-                                width="120">
-                            </el-table-column>
-                            <el-table-column
-                                prop="id"
-                                label="地址"
+                                prop="dept_name"
+                                label="单位组织"
                                 show-overflow-tooltip>
                             </el-table-column>
                         </el-table>
@@ -105,15 +100,20 @@
                     label: 'name',
                     isLeaf : 'isLeaf'
                 },
-                tableData: [{
-                    date: '2016-05-03',
-                    name: '吴醉醉',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                },{
-                    date: '2016-05-03',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }],
+                tableData: [
+                    {
+                        user_name: 'administrator',
+                        dept_name: '环保厅'
+                    },
+                    {
+                        user_name: 'admin',
+                        dept_name: '尚义路小学'
+                    },
+                    {
+                        user_name: 'super',
+                        dept_name: '兰花广场'
+                    }
+                ],
                 /*右键菜单开始*/
                 visible : false,
                 left : 0,
