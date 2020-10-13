@@ -1,0 +1,168 @@
+<meta charset="utf-8"/>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="clearfix">
+                    <table class="no-border" style="display:inline">
+                        <tr permission='loginLogs_btn_listData' style="display:none">
+                            <td style="padding: 0px 6px;">
+                                登录账号
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" id="key_user_name" class="form-control search-query" placeholder="登录账号" style="width:140px"/>
+                                </div>
+                            </td>
+                            <td style="padding: 0px 6px;">
+                                是否状态
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <span class="input-group-btn">
+                                        <button data-toggle="dropdown" class="btn btn-primary btn-white dropdown-toggle col-sm-12" style="margin-left:0.01em;width:99px;min-width:99px;"><!--注意宽度-->
+                                            <span id="searchDropdownflag">是否状态</span><!--注意显示文字-->
+                                            <i class="ace-icon fa fa-angle-down"></i>
+                                        </button>
+                                        <ul class="dropdown-menu col-sm-12" style="margin-left:-1px;width:99px;min-width:90px;"><!--注意宽度,2个字值是70,4个字值是99-->
+                                            <li>
+                                                <a href="javascript:winFn.dropdown('#key_flag','','#searchDropdownflag','是否状态');">是否状态</a><!--注意显示文字-->
+                                            </li>
+                                            <li>
+                                                <a href="javascript:winFn.dropdown('#key_flag','1','#searchDropdownflag','登录成功');">登录成功</a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:winFn.dropdown('#key_flag','0','#searchDropdownflag','登录失败');">登录失败</a>
+                                            </li>
+                                        </ul>
+                                        <input id="key_flag" type="hidden"/><!--注意搜索时隐藏域-->
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-inverse btn-white" id="btnSearch" permission='loginLogs_btn_listData' style="display:none">
+                                            <span class="ace-icon fa fa-search bigger-110"></span>
+                                            搜索
+                                        </button>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="hidden-480 pull-right tableTools-container" permission='loginLogs_btn_listData' style="display:none"></div>
+                </div>
+                <table id="tableListLoginLogs" class="table table-striped table-bordered table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divKeyColumns" style="display:none;padding:1px 0px;"></div>
+<div style="display:none;">
+    <input type="hidden" id="loginLogs_btn_listData"/>
+    <input type="hidden" id="loginLogs_row_queryById"/>
+</div>
+<script type="text/javascript">
+    var scripts = [null,null];
+    $('.page-content-area').ace_ajax('loadScripts',scripts,function(){
+        var tableDom = '#tableListLoginLogs';
+        $(function(){
+            var urlRoute = '/loginLogs/';/*请求controller层的url*/
+            var getList = urlRoute + 'listData';/*获取数据列表,此处不需要添加的,已在请求的url添加了前缀*/
+            var thisTable = pageDataTable.initDataTable({
+                tableDom : tableDom,
+                sAjaxSource: getList,
+                fnServerParams : function(params){
+                    params.push({"name":"user_name","value":$("#key_user_name").val()},{"name":"flag","value":$("#key_flag").val()});
+                },
+                aoColumns : [
+                    {
+                        mData : "user_name",
+                        sTitle : "登录账号"
+                    },
+                    {
+                        mData : "login_time",
+                        bSortable : false,
+                        sTitle : "登录时间"
+                    },
+                    {
+                        mData : "login_ip",
+                        sTitle : "登录ip",
+                        bSortable : false
+                    },
+                    {
+                        mData : "flag",
+                        sTitle : "登录状态",
+                        render : function(value,type,row,meta){
+                            return value === 1 ? "成功" : "失败";
+                        }
+                    }
+                ],
+                columnDefs : [
+                    {
+                        targets: [0,1,2,3],
+                        render: function (value,type,row,meta){
+                            return pageDataTable.formatColumn(value);
+                        }
+                    }
+                ]
+            });
+            pageDataTable.buttons(thisTable);
+            pageDataTable.action(thisTable);
+            pageDataTable.select(thisTable,tableDom);
+            pageDataTable.tooltip();
+            var thisJquery = $(tableDom).dataTable();
+            thisPage = {
+                init : function(){
+                    this.btnEvent();
+                },
+                btnEvent : function(){
+                    $('#btnAdd').on('click',function(){
+                        thisPage.edit();
+                    });
+                    //搜索按钮
+                    $('#btnSearch').on('click',function(){
+                        thisPage.search();
+                    });
+                    //按钮组-自定义显示列
+                    $('#iconColumn').on('click',function(){
+                        pageDataTable.columnCustom(thisTable,tableDom,'#divKeyColumns');
+                    });
+                    //按钮组-搜索
+                    $('#iconRefresh').on('click',function(){
+                        thisPage.search();
+                    });
+                    $('#btnDel').on('click',function(){
+                        thisPage.delKeys();
+                    });
+                },
+                search : function(){
+                    if(verifyFn.inputRequired('#loginLogs_btn_listData')){
+                        layerFn.alert('没有操作权限',AppKey.code.code199);
+                        return;
+                    }
+                    $(tableDom + ' input[type=checkbox]').prop('checked',false);
+                    thisTable.draw();
+                },
+                resetForm : function(){
+                    winFn.clearFormData('#form_sys_login_logs_edit');
+                },
+                complete : function(data,index,search){
+                    try{
+                        if(index){
+                            layerFn.closeIndex(index);
+                        }
+                        if(search){
+                            thisPage.search();
+                        }
+                        if(data){
+                            layerFn.handleResult(data.msg,data.code);
+                        }
+                    }catch(e){}
+                }
+            };
+            thisPage.init();
+        });
+    });
+</script>
