@@ -62,7 +62,20 @@
     <input type="hidden" id="user_btn_row_saveAllotRole"/>
     <input type="hidden" id="user_row_saveOwnMenu"/>
     <input type="hidden" id="user_row_editEnabled"/>
+    <input type="hidden" id="user_row_bindDep_query"/>
+    <input type="hidden" id="user_row_bindDep_save"/>
 </div>
+
+<div id="div_dept_data" style="display:none;">
+    <input type="text" id="dept_name" readonly="readonly" class="form-control search-query" placeholder="请选择单位组织" style="margin-top:6px"/>
+    <input type="hidden" id="dept_kid">
+    <ul id="treeDeptData" class="ztree">
+        <li style="margin-top:2px;">
+            <span>获取数据失败</span>
+        </li>
+    </ul>
+</div>
+
 <script type="text/javascript">
     var scripts = [null,null];
     $('.page-content-area').ace_ajax('loadScripts',scripts,function(){
@@ -80,6 +93,8 @@
             var urlGetOwnMenu = urlRoute + 'getOwnMenu';/*根据指定userid获取菜单用于分配私有菜单*/
             var urlSaveOwnMenu = urlRoute + 'saveOwnMenu';/*保存私有菜单(用户菜单)*/
             var urlGetMenuData = urlRoute + 'getMenuData';/*查看指定userid所有权限菜单数据*/
+            var urlGetDeptData = urlRoute + 'getDeptData';/*获取部门信息*/
+            var urlSaveDeptData = urlRoute + 'saveDeptData';/*绑定部门*/
             var thisTable = pageDataTable.initDataTable({
                 tableDom : tableDom,
                 sAjaxSource: getList,
@@ -117,10 +132,10 @@
                         }
                     },
                     {
-                        mData : "add_date",
-                        sTitle : "添加时间",
+                        mData : "dep_name",
+                        sTitle : "单位组织",
                         sClass : "hidden-480",
-                        sWidth : "11%"
+                        sWidth : "18%"
                     },
                     {
                         mData : "logintime",
@@ -150,7 +165,8 @@
                             "<a class='hidden-xs' href='javascript:thisPage.rowAllotRole("+meta.row+");' style='outline:none;text-decoration: none;color:#00a6ac;margin-left:6px;display:none' permission='user_btn_row_getAllotRole'>角色</a>"+
                             "<a href='javascript:thisPage.rowDisable("+meta.row+");' style='outline:none;text-decoration: none;color:#33a3dc;margin-left:6px;display:none' permission='user_row_editEnabled'>"+(row.enabled === 0 ? "禁用":"启用")+"</a>"+
                             "<a class='hidden-xs' href='javascript:thisPage.rowUserMenu("+meta.row+");' style='outline:none;text-decoration: none;color:#008792;margin-left:6px;display:none' permission='user_row_getOwnMenu'>私有菜单</a>"+
-                            "<a href='javascript:thisPage.rowOwnMenu("+meta.row+");' style='outline:none;text-decoration: none;color:#06aff3;margin-left:6px;display:none' permission='user_row_getMenuData'>权限菜单</a>";
+                            "<a href='javascript:thisPage.rowOwnMenu("+meta.row+");' style='outline:none;text-decoration: none;color:#06aff3;margin-left:6px;display:none' permission='user_row_getMenuData'>权限菜单</a>"+
+                            "<a href='javascript:thisPage.bindDep("+meta.row+");' style='outline:none;text-decoration: none;color:#f36506;margin-left:6px;display:none' permission='user_row_bindDep_save'>绑定部门</a>";
                             return html;
                         }
                     },
@@ -169,6 +185,8 @@
             var thisJquery = $(tableDom).dataTable();
             var domOwnMenu = 'treeOwnMenu';
             var tree_obj_own = null;//变量标识,用于初始化及取消选中操作及获取已选中节点数据
+            var domDeptData = 'treeDeptData';
+            var tree_obj_dept = null;//用于初始化及取消选中操作及获取已选中节点数据,否则报错
             var settingOwn = {
                 view: {
                     expandSpeed : 100,
@@ -191,6 +209,30 @@
                 callback : {
                     beforeClick : function(treeId,node,clickFlag){
                         return false;
+                    }
+                }
+            };
+            var settingDeptData = {
+                view: {
+                    expandSpeed : 100,
+                    showLine : true,
+                    showIcon : true,
+                    fontCss : {"color":"#000","outline":"none","text-decoration":"none"}
+                },
+                data: {
+                    simpleData: {
+                        enable: true,
+                        idKey: "kid",
+                        pIdKey: "pid",
+                    }
+                },
+                callback : {
+                    beforeClick : function(treeId,node,clickFlag){
+                        return true;
+                    },
+                    onClick : function(event,treeIdDom,node,clickFlag){
+                        winFn.setDomValue('#dept_name',node.name);
+                        winFn.setDomValue('#dept_kid',node.kid);
                     }
                 }
             };
@@ -499,6 +541,35 @@
                                 $('a.layui-layer-btn2').text('全选');
                                 tree_obj_own.checkAllNodes(false);
                             }
+                        });
+                    });
+                },
+                bindDep(index){
+                    if(verifyFn.inputRequired('#user_row_bindDep_query')){
+                        layerFn.alert('没有操作权限',AppKey.code.code199);
+                        return;
+                    }
+                    var row = thisJquery.fnGetData(index);
+                    layerFn.queryGetHint(urlGetDeptData,{userId:row.kid},function(data){
+                        tree_obj_dept = $.fn.zTree.init($("#"+domDeptData),settingDeptData,data.data);//填充数据
+                        tree_obj_dept.expandAll(true);
+                        layerFn.addOrEdit('账号['+row.user_name+']绑定单位部门','#div_dept_data',['420px','420px'],function(index){
+                            if(verifyFn.inputRequired('#user_row_bindDep_save')){
+                                layerFn.alert('没有操作权限',AppKey.code.code199);
+                                return;
+                            }
+                            if(verifyFn.inputRequired('#dept_kid')){
+                                layerFn.alert('请选择绑定单位组织',AppKey.code.code199);
+                                return;
+                            }
+                            var params = {
+                                dep_id : winFn.getDomValue('#dept_kid'),
+                                user_id:row.kid
+                            };
+                            layerFn.submit(urlSaveDeptData,params,function(data){
+                                layerFn.closeIndex(index);
+                                layerFn.handleResult(data.msg,data.code);
+                            });
                         });
                     });
                 },

@@ -53,8 +53,9 @@
                             ref="multipleTable"
                             :data="tableData"
                             tooltip-effect="dark"
+                            border
                             style="width: 100%">
-                            <el-table-column type="selection" align="center" width="35"></el-table-column>
+                            <el-table-column type="selection" align="center" width="55"></el-table-column>
                             <el-table-column
                                 label="日期"
                                 width="120">
@@ -105,6 +106,10 @@
                     isLeaf : 'isLeaf'
                 },
                 tableData: [{
+                    date: '2016-05-03',
+                    name: '吴醉醉',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                },{
                     date: '2016-05-03',
                     name: '王小虎',
                     address: '上海市普陀区金沙江路 1518 弄'
