@@ -30,7 +30,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div style="display:flex;justify-content:space-between">
-                    <div style="width:500px;height:auto;">
+                    <div style="width:500px;height:100%;">
                         <el-tree
                             :props="props"
                             :load="loadNode"
@@ -208,6 +208,11 @@
                 this.clearFormData();
                 this.isParent = false;
                 layerFn.addOrEdit(this.nodeData.name+"添加子节点",'#div_dep_edit',['300px','190px'],(index)=>{
+                    let depName = this.depName;
+                    if(depName == null || depName == ''){
+                        layerFn.alert('请输入节点名称', AppKey.code.code199);
+                        return;
+                    }
                     const params = {
                         dep_name : this.depName,
                         isParent : (this.isParent) ? 1 : 0,
@@ -226,7 +231,25 @@
                 const _this = this;
                 this.isParent = !this.nodeData.isLeaf;
                 this.depName = this.nodeData.name;
+                this.depSeq = this.nodeData.seq;
                 layerFn.addOrEdit('编辑'+this.nodeData.name,'#div_dep_edit',['300px','190px'],(index)=>{
+                    let depName = this.depName;
+                    if(depName == null || depName == ''){
+                        layerFn.alert('请输入节点名称', AppKey.code.code199);
+                        return;
+                    }
+                    const params = {
+                        dep_name : this.depName,
+                        isParent : (this.isParent) ? 1 : 0,
+                        seq : this.depSeq,
+                        kid : this.nodeData.id
+                    };
+                    const pid = this.nodeData.pid;
+                    httpReq.post('/department/edit',params,(data)=>{
+                        layerFn.closeIndex(index);
+                        this.resultHandle(data,pid);
+                        _this.liRefresh();
+                    });
                 });
             },
             /*删除*/
@@ -244,7 +267,6 @@
             liRefresh(){
                 const id = this.nodeData.id;
                 const isLeaf = this.nodeData.isLeaf;
-                console.info(isLeaf);
                 let node = this.$refs.asyncTree.getNode(id);
                 if(node){
                     if(isLeaf){
