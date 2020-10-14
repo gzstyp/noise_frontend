@@ -6345,14 +6345,15 @@ fieldset[disabled] .btn-white.btn-default.active {
  //}
  */
 }
+/*下拉列表鼠标滑动颜色*/
 .btn-white.btn-primary:hover,
 .btn-white.btn-primary:focus,
 .btn-white.btn-primary.active,
 .btn-white.btn-primary:active,
 .open > .btn-white.btn-primary.dropdown-toggle,
 .open > .btn-white.btn-primary.active.dropdown-toggle {
-  background-color: #eaf2f8 !important;
-  border-color: #8aafce;
+  background-color: #f2f2f2 !important;
+  border-color: #3b8cff;
   color: #537c9f !important;
 }
 .btn-white.btn-primary:hover.no-border,
@@ -6541,7 +6542,7 @@ fieldset[disabled] .btn-white.btn-warning.active {
 .btn-white.btn-info:active.no-border,
 .open > .btn-white.btn-info.dropdown-toggle.no-border,
 .open > .btn-white.btn-info.active.dropdown-toggle.no-border {
-  border-color: #8fbcd9;
+  border-color: #f0f0f0;
 }
 .btn-white.btn-info.disabled,
 .btn-white.btn-info[disabled],
@@ -6558,19 +6559,11 @@ fieldset[disabled] .btn-white.btn-info:active,
 .btn-white.btn-info.disabled.active,
 .btn-white.btn-info[disabled].active,
 fieldset[disabled] .btn-white.btn-info.active {
-  border-color: #8fbcd9;
+  border-color: #f0f0f0;
 }
 .btn-white.btn-inverse {
   border-color: #3b8cff;
   color: #3b8cff !important;
-  /**
- //&:hover, &:focus, &.focus, .open > &.dropdown-toggle {
-	//color: saturate(darken(@txt-color , 5%) , 5%) !important;
- //}
- //&.no-border:hover , &.no-border:active {
-	//border-color: @border-color;
- //}
- */
 }
 .btn-white.btn-inverse:hover,
 .btn-white.btn-inverse:focus,
@@ -6578,8 +6571,8 @@ fieldset[disabled] .btn-white.btn-info.active {
 .btn-white.btn-inverse:active,
 .open > .btn-white.btn-inverse.dropdown-toggle,
 .open > .btn-white.btn-inverse.active.dropdown-toggle {
-  background-color: #e4e4e4 !important;
-  border-color: #959595;
+  background-color: #f2f2f2 !important;/*按钮鼠标滑动时的背景色*/
+  border-color: #3b8cff;
   color: #3b8cff !important;
 }
 .btn-white.btn-inverse:hover.no-border,
@@ -8220,7 +8213,7 @@ fieldset[disabled] .btn-white.btn-grey.active {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .dropdown-menu > li > a {
-  font-size: 13px;
+  font-size: 14px;/*下拉列表字体样式*/
   padding-left: 11px;
   padding-right: 11px;
   padding-bottom: 4px;
@@ -8246,8 +8239,8 @@ fieldset[disabled] .btn-white.btn-grey.active {
 .dropdown-menu > li > a:active,
 .dropdown-menu > li.active > a,
 .dropdown-menu > li.active:hover > a {
-  background:#428bca;
-  color: #fff;
+  background:#e2e2e2;
+  color: #3b8cff;
 }
 .dropdown-default > li:hover > a,
 .dropdown-default > li > a:focus,

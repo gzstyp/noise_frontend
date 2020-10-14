@@ -19,12 +19,35 @@
                                     父级名称
                                 </td>
                                 <td>
-                                    <input type="text" id="key_VALUE" class="form-control search-query hidden-480" placeholder="父级字典名称" style="width:140px"/>
+                                    <div class="input-group">
+                                        <input type="text" id="key_VALUE" class="form-control search-query hidden-480" placeholder="父级字典名称" style="width:140px"/>
+                                        <span class="input-group-btn">
+                                        <button type="button" class="btn btn-inverse btn-white" id="btnSearch" permission='dictionary_btn_listData' style="display:none">
+                                            <span class="ace-icon fa fa-search bigger-110"></span>
+                                            搜索
+                                        </button>
+                                    </span>
+                                    </div>
                                 </td>
                                 <td>
-                                    <el-button type="primary" plain id="btnSearch" permission='dictionary_btn_listData' style="display:none" icon="el-icon-search">搜索</el-button>
-                                    <el-button style="display:none;margin-left:-2px;" type="primary" id="btnAdd" permission='dictionary_btn_add' icon="el-icon-plus">添加</i></el-button>
-                                    <el-button style="display:none;margin-left:-2px;" type="danger" id="btnDel" permission='dictionary_btn_delByKeys' icon="el-icon-delete">删除</i></el-button>
+                                    <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-inverse btn-white" id="btnAdd" permission='dictionary_btn_add' style="display:none">
+                                        <span class="ace-icon glyphicon glyphicon-plus bigger-110"></span>
+                                        添加
+                                    </button>
+                                </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-inverse btn-white" id="btnDel" permission='dictionary_btn_delByKeys' style="display:none">
+                                        <span class="fa fa-trash red2 bigger-110"></span>
+                                        删除
+                                    </button>
+                                </span>
+                                    </div>
                                 </td>
                             </tr>
                         </table>

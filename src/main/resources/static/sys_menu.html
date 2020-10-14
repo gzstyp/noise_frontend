@@ -42,11 +42,25 @@
                                 父级菜单
                             </td>
                             <td>
-                                <input type="text" id="key_pName" class="form-control search-query hidden-480" placeholder="父级菜单" style="width:140px"/>
+                                <div class="input-group">
+                                    <input type="text" id="key_pName" class="form-control search-query hidden-480" placeholder="父级菜单" style="width:140px"/>
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-inverse btn-white" id="btnSearch" permission='menu_btn_listData' style="display:none">
+                                            <span class="ace-icon fa fa-search bigger-110"></span>
+                                            搜索
+                                        </button>
+                                    </span>
+                                </div>
                             </td>
                             <td>
-                                <el-button type="primary" plain id="btnSearch" permission='menu_btn_listData' style="display:none" icon="el-icon-search">搜索</el-button>
-                                <el-button style="display:none;margin-left:-2px;" type="primary" id="btnAdd" permission='menu_btn_add' icon="el-icon-plus">添加</i></el-button>
+                                <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-inverse btn-white" id="btnAdd" permission='menu_btn_add' style="display:none">
+                                        <span class="ace-icon glyphicon glyphicon-plus bigger-110"></span>
+                                        添加
+                                    </button>
+                                </span>
+                                </div>
                             </td>
                         </tr>
                     </table>

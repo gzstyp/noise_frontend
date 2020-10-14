@@ -10,14 +10,47 @@
                                 登录账号
                             </td>
                             <td style="padding: 0px 0px 0px 6px;">
-                                <input type="text" id="key_user_name" class="form-control search-query" placeholder="登录账号关键字" />
+                                <div class="input-group">
+                                    <input type="text" id="key_user_name" class="form-control search-query" placeholder="登录账号关键字" />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-inverse btn-white" id="btnSearch">
+                                            <span class="ace-icon fa fa-search bigger-110"></span>
+                                            搜索
+                                        </button>
+                                    </span>
+                                </div>
                             </td>
                             <td>
-                                <el-button type="primary" plain id="btnSearch" icon="el-icon-search">搜索</el-button>
-                                <el-button style="display:none;margin-left:-2px;" type="primary" id="btnAdd" permission='user_btn_add' icon="el-icon-plus">添加</i></el-button>
-                                <el-button style="display:none;margin-left:-2px;" type="danger" id="btnDel" permission='user_btn_delByKeys' icon="el-icon-delete">删除</i></el-button>
-                                <el-button style="display:none;margin-left:-2px;" type="warning" id="btnAllotRole" permission='user_btn_row_getAllotRole' icon="el-icon-place">角色</i></el-button>
+                                <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-inverse btn-white" id="btnAdd" permission='user_btn_add' style="display:none">
+                                        <span class="fa fa-user-plus bigger-110"></span>
+                                        添加
+                                    </button>
+                                </span>
+                                </div>
                             </td>
+                            <td class="hidden-480">
+                                <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-inverse btn-white" id="btnDel" permission='user_btn_delByKeys' style="display:none">
+                                        <span class="fa fa-user-times red2 bigger-110"></span>
+                                        删除
+                                    </button>
+                                </span>
+                                </div>
+                            </td>
+                            <td class="hidden-480">
+                                <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-inverse btn-white" id="btnAllotRole" permission='user_btn_row_getAllotRole' style="display:none">
+                                        <span class="fa fa-link green bigger-110"></span>
+                                        角色
+                                    </button>
+                                </span>
+                                </div>
+                            </td>
+                        </tr>
                     </table>
                     <div class="hidden-480 pull-right tableTools-container" permission='user_btn_listData' style="display:none"></div>
                 </div>
