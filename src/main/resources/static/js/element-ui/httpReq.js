@@ -9,12 +9,31 @@ var refreshFlag = true;
 var baseUri = urlPrefix;
 //请求拦截器,好使!!!
 axios.interceptors.request.use(function(config){
-    config.headers.accessToken = sessionStorage.getItem('accessToken') || '';
-    config.headers.refreshToken = sessionStorage.getItem('refreshToken') || '';
+    let access = sessionStorage.getItem('accessToken');
+    let refresh = sessionStorage.getItem('refreshToken');
+    if(access != null && access.length > 0){
+        if(refresh != null && refresh.length > 0){
+            config.headers.accessToken = access;
+            config.headers['refreshToken'] = refresh;
+        }
+    }
+    config.headers["Content-type"] = "multipart/form-data";//不好使
     const formData = new FormData();
     const params = config.data;
     for(let key in params){
-        formData.append(key.trim(),params[key]);
+        if (params[key] != null){
+            if(typeof (params[key])=='string'){
+                var value = params[key].trim();
+                if(value && value.length > 0){
+                    formData.append(key.trim(),value);
+                }
+            }else{
+                var value = params[key];
+                if(value){
+                    formData.append(key.trim(),value);
+                }
+            }
+        }
     }
     config.data = formData;
     return config;
